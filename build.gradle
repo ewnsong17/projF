@@ -12,7 +12,12 @@ allprojects {
 subprojects {
     apply plugin: 'java'
 
-    // ★ repositories 블록 제거 ★
+    dependencies {
+        compileOnly 'org.projectlombok:lombok:1.18.32'
+        annotationProcessor 'org.projectlombok:lombok:1.18.32'
+        testCompileOnly 'org.projectlombok:lombok:1.18.32'
+        testAnnotationProcessor 'org.projectlombok:lombok:1.18.32'
+    }
 
     tasks.withType(JavaCompile).configureEach {
         options.encoding = 'UTF-8'

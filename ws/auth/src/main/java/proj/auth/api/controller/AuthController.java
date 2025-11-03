@@ -1,8 +1,12 @@
 package proj.auth.api.controller;
 
+import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import proj.auth.api.service.AuthService;
+import proj.shared.model.auth.LoginDTO;
 import proj.shared.model.auth.ShakeDTO;
 
 @RestController
@@ -10,6 +14,7 @@ import proj.shared.model.auth.ShakeDTO;
 public class AuthController {
 
     private final AuthService authService;
+    public static Logger logger = LoggerFactory.getLogger("debug");
 
     public AuthController(AuthService authService) {
         this.authService = authService;
@@ -19,12 +24,17 @@ public class AuthController {
     클라이언트 쉐이크 요청
      */
     @PostMapping("/shake")
-    public ResponseEntity<ShakeDTO.ShakeRes> shake(@RequestBody ShakeDTO.ShakeReq req) {
-        return ResponseEntity.ok(authService.shake(req));
+    public ResponseEntity<ShakeDTO.ShakeRes> shake() {
+        logger.debug("request shake detected");
+        return ResponseEntity.ok(authService.shake());
     }
 
+    /*
+    클라이언트 로그인 요청
+     */
     @PostMapping("/login")
-    public ResponseEntity<ShakeDTO.ShakeRes> login(@Valid @RequestBody ShakeDTO.ShakeReq req) {
+    public ResponseEntity<LoginDTO.LoginRes> login(@Valid @RequestBody LoginDTO.LoginReq req) {
+        logger.debug("request login detected");
         return ResponseEntity.ok(authService.login(req));
     }
 }
