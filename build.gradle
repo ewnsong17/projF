@@ -1,0 +1,25 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.4' apply false
+    id 'io.spring.dependency-management' version '1.1.6' apply false
+}
+
+allprojects {
+    group = 'proj'
+    version = '0.1.0'
+}
+
+subprojects {
+    apply plugin: 'java'
+
+    // ★ repositories 블록 제거 ★
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+        sourceCompatibility = '21'
+        targetCompatibility = '21'
+    }
+    tasks.withType(Test).configureEach {
+        useJUnitPlatform()
+    }
+}

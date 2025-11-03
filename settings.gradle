@@ -1,0 +1,19 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS) // ← 이 모드 유지
+    repositories {
+        mavenCentral()
+    }
+}
+rootProject.name = 'projF'
+
+include ':shared:model',
+        ':ws:auth',
+        ':ws:lobby',
+        ':ws:match',
+        ':gs:fight'
