@@ -38,12 +38,16 @@
         <appender-ref ref="ROLLING"/>
     </appender>
 
-    <!-- 패키지별 레벨 -->
-    <logger name="proj" level="DEBUG"/>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d %-5level [%thread] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
 
-    <!-- 루트 -->
+    <!-- proj.auth 패키지 전체 DEBUG 레벨 -->
+    <logger name="proj.auth" level="DEBUG"/>
+
     <root level="INFO">
-        <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="ASYNC"/>
+        <appender-ref ref="STDOUT"/>
     </root>
 </configuration>

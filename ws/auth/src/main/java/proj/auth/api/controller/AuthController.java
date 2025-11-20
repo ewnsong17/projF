@@ -14,7 +14,7 @@ import proj.shared.model.auth.ShakeDTO;
 public class AuthController {
 
     private final AuthService authService;
-    public static Logger logger = LoggerFactory.getLogger("debug");
+    public static Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     public AuthController(AuthService authService) {
         this.authService = authService;
