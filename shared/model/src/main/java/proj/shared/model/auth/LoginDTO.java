@@ -4,25 +4,22 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 public class LoginDTO {
 
     @Getter
     @Setter
-    @Builder
+    @ToString
     public static class LoginReq {
         @NotBlank public String id;
         @NotBlank public String pw;
-
-        @Override
-        public String toString() {
-            return String.format("userId: %s, userPw: %s", id, pw);
-        }
     }
 
 
     @Getter
     @Setter
+    @ToString
     @Builder
     public static class LoginRes {
         public String accessToken;

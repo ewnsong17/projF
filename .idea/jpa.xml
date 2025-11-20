@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PersistenceUnitSettings">
+    <persistence-units>
+      <persistence-unit moduleName="projF.ws.auth.test" name="projF.ws.auth.test" framework="JPA" ormUnit="projF.ws.auth.test:projF.ws.auth.test" defaultDataSourceId="71d43de0-36f1-4877-913f-5af450f72a30" />
+    </persistence-units>
+  </component>
+</project>

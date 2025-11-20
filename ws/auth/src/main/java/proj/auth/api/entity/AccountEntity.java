@@ -3,12 +3,14 @@ package proj.auth.api.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import proj.shared.model.auth.AuthStatus;
 
-@Entity @Table(name = "user_info")
+@Entity @Table(name = "account_info")
 @Getter
 @Setter
-public class UserEntity {
+@ToString
+public class AccountEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

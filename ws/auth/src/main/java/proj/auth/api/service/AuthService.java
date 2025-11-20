@@ -6,8 +6,8 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import proj.auth.api.config.AuthConfig;
-import proj.auth.api.entity.UserEntity;
-import proj.auth.api.repository.UserRepository;
+import proj.auth.api.entity.AccountEntity;
+import proj.auth.api.repository.AccountRepository;
 import proj.shared.model.auth.ShakeDTO.*;
 import proj.shared.model.auth.LoginDTO.*;
 import proj.auth.api.util.JwtService;
@@ -21,17 +21,17 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 public class AuthService {
-    public static Logger logger = LoggerFactory.getLogger("debug");
+    public static Logger logger = LoggerFactory.getLogger(AuthService.class);
     private final AuthConfig prop;
     private final SecureRandom rand = new SecureRandom();
-    private final UserRepository users;
+    private final AccountRepository accounts;
     private final JwtService jwtService;
     private final StringRedisTemplate redis;
     private final PasswordEncoder encoder;
 
-    public AuthService(AuthConfig prop, UserRepository users, PasswordEncoder encoder, JwtService jwtService, StringRedisTemplate redis) {
+    public AuthService(AuthConfig prop, AccountRepository accounts, PasswordEncoder encoder, JwtService jwtService, StringRedisTemplate redis) {
         this.prop = prop;
-        this.users = users;
+        this.accounts = accounts;
         this.encoder = encoder;
         this.jwtService = jwtService;
         this.redis = redis;
@@ -63,30 +63,44 @@ public class AuthService {
     로그인 정보 처리
      */
     public LoginRes login(LoginReq req) {
-        logger.info("user info {}", req.toString());
-        UserEntity user = users.findByName(req.id).orElseThrow(() -> new IllegalArgumentException("INVALID_USER_INFO"));
-        if (!encoder.matches(req.pw, user.getPassword())) {
-            throw new IllegalArgumentException("INVALID_USER_INFO");
+        logger.info("request info {}", req.toString());
+        AccountEntity account = accounts.findByName(req.id).orElseThrow(() -> new IllegalArgumentException("INVALID_ACCOUNT"));
+        if (!encoder.matches(req.getPw(), account.getPassword())) {
+            throw new IllegalArgumentException("INVALID_ACCOUNT");
         }
+
+        logger.info("find account {}|{}", account.getId(), account.getName());
 
         // random UUID 생성
         String sessionId = UUID.randomUUID().toString();
 
-        // redis 에 TTL 저장
-        redis.opsForValue().set("session: " + sessionId, String.valueOf(user.getId()));
+        logger.info("account {} get uuid: {}", account.getName(), sessionId);
 
-        logger.info("user {} get uuid: {}", req.id, sessionId);
+        try {
+            redis.opsForValue().set("session: " + sessionId, String.valueOf(account.getId()));
+            logger.info("redis set ok for session {}", sessionId);
+        } catch (Exception e) {
+            logger.error("redis error", e);
+            throw e;
+        }
+
+        // redis 에 TTL 저장
+        redis.opsForValue().set("session: " + sessionId, String.valueOf(account.getId()));
+
+        logger.info("add redis account info {}", account);
 
         // JWT 토큰 발급
-        String access = jwtService.createAccessToken(String.valueOf(user.getId()), Map.of("name", user.getName()));
-        String refresh = jwtService.createRefreshToken(String.valueOf(user.getId()));
+        String access = jwtService.createAccessToken(String.valueOf(account.getId()), Map.of("name", account.getName()));
+        String refresh = jwtService.createRefreshToken(String.valueOf(account.getId()));
+
+        logger.info("get JWT bearer Token {}  |  {}", access, refresh);
 
         // UDP 1회성 티켓
         String udpTicket = "utk-"+getNonce(12);
-        redis.opsForValue().set("udp:ticket:"+udpTicket, String.valueOf(user.getId()), 30, TimeUnit.SECONDS);
+        redis.opsForValue().set("udp:ticket:"+udpTicket, String.valueOf(account.getId()), 30, TimeUnit.SECONDS);
         
         return LoginRes.builder()
-                .accessToken(access).refreshToken(refresh)
+                .accessToken(access).refreshToken(refresh).udpTicket(udpTicket)
                 .sessionId(sessionId).protocolVersion(prop.getProtocol()).build();
     }
 }

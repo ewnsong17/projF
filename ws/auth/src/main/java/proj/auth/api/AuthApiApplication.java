@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class AuthApiApplication {
-    public static Logger logger = LoggerFactory.getLogger("debug");
+    public static Logger logger = LoggerFactory.getLogger(AuthApiApplication.class);
 
     public static void main(String[] args) {
         logger.debug("auth server start..");
